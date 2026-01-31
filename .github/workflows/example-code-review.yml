@@ -1,0 +1,35 @@
+name: Example - Code Review with Copilot CLI
+
+on:
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  copilot-code-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Get full history for diff
+
+      - name: Setup GitHub Copilot CLI
+        uses: mvkaran/setup-copilot-cli@v1
+        with:
+          version: 'latest'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          echo "Getting list of changed files..."
+          BASE_REF="${{ github.base_ref }}"
+          git diff --name-only origin/${BASE_REF}...HEAD > changed_files.txt
+          cat changed_files.txt
+
+      - name: Use Copilot CLI for suggestions
+        run: |
+          echo "Using Copilot CLI to provide insights..."
+          copilot -i "What are best practices for code review?"
+          echo ""
+          echo "Copilot CLI is ready to assist with your pull request!"

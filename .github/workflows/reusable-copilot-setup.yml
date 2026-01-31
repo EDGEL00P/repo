@@ -1,0 +1,45 @@
+name: Reusable Copilot CLI Setup
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: >-
+          Version of Copilot CLI to install
+          (latest, prerelease, or specific version)
+        required: false
+        type: string
+        default: 'latest'
+    secrets:
+      GITHUB_TOKEN:
+        description: 'GitHub token for authentication'
+        required: true
+    outputs:
+      copilot-version:
+        description: "The installed version of Copilot CLI"
+        value: ${{ jobs.setup.outputs.version }}
+      copilot-path:
+        description: "Path to the Copilot CLI executable"
+        value: ${{ jobs.setup.outputs.path }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.setup-copilot.outputs.version }}
+      path: ${{ steps.setup-copilot.outputs.path }}
+    steps:
+      - name: Setup GitHub Copilot CLI
+        id: setup-copilot
+        uses: mvkaran/setup-copilot-cli@v1
+        with:
+          version: ${{ inputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify installation
+        run: |
+          VERSION="${{ steps.setup-copilot.outputs.version }}"
+          PATH_OUT="${{ steps.setup-copilot.outputs.path }}"
+          echo "Installed Copilot CLI version: ${VERSION}"
+          echo "Installed at: ${PATH_OUT}"
+          copilot --version

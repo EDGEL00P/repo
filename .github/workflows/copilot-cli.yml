@@ -1,0 +1,32 @@
+name: GitHub Copilot CLI Setup
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  setup-copilot-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup GitHub Copilot CLI
+        uses: mvkaran/setup-copilot-cli@v1
+        with:
+          version: 'latest'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify Copilot CLI installation
+        run: |
+          echo "Checking Copilot CLI version..."
+          copilot --version
+          echo "Copilot CLI is ready to use!"
+
+      - name: Example usage - Get help
+        run: |
+          echo "Example: Getting Copilot CLI help"
+          copilot --help
