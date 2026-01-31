@@ -25,6 +25,8 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       version: ${{ steps.setup-copilot.outputs.version }}
       path: ${{ steps.setup-copilot.outputs.path }}
