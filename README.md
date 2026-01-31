@@ -29,21 +29,37 @@ name: Use Copilot CLI
 on: [push, pull_request]
 
 jobs:
-  setup-and-use-copilot:
+  copilot-tasks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup GitHub Copilot CLI
+        uses: mvkaran/setup-copilot-cli@v1
+        with:
+          version: 'latest'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Use Copilot CLI
+        run: copilot -i "your prompt here"
+```
+
+Alternatively, you can reference the reusable workflow for just the setup step,
+but note that each job needs to install Copilot CLI separately:
+
+```yaml
+name: Use Copilot CLI
+
+on: [push]
+
+jobs:
+  verify-copilot:
     uses: EDGEL00P/repo/.github/workflows/reusable-copilot-setup.yml@main
     secrets:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     with:
-      version: 'latest'  # or 'prerelease' or specific version like 'v0.0.369'
-  
-  use-copilot:
-    needs: setup-and-use-copilot
-    runs-on: ubuntu-latest
-    steps:
-      - name: Use Copilot CLI
-        run: copilot -i "your prompt here"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      version: 'latest'
 ```
 
 ### Quick Start for Any Repository

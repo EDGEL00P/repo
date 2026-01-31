@@ -8,9 +8,9 @@ This guide shows you how to use the GitHub Copilot CLI workflows from this repos
 
 You have three options to enable GitHub Copilot CLI in your repositories:
 
-#### Option 1: Use the Reusable Workflow (Recommended)
+#### Option 1: Direct Action Usage (Recommended)
 
-Create `.github/workflows/copilot.yml` in your repository:
+Add to any existing workflow or create `.github/workflows/copilot.yml`:
 
 ```yaml
 name: Copilot CLI
@@ -19,14 +19,39 @@ on: [push, pull_request]
 
 jobs:
   use-copilot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup GitHub Copilot CLI
+        uses: mvkaran/setup-copilot-cli@v1
+        with:
+          version: 'latest'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Use Copilot
+        run: copilot -i "your question here"
+```
+
+#### Option 2: Use the Reusable Workflow
+
+Use the reusable workflow for verification and testing:
+
+```yaml
+name: Verify Copilot CLI
+
+on: [push, pull_request]
+
+jobs:
+  verify-copilot:
     uses: EDGEL00P/repo/.github/workflows/reusable-copilot-setup.yml@main
     secrets:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-#### Option 2: Direct Action Usage
-
-Add to any existing workflow:
+Note: The reusable workflow is best for verification. For using Copilot CLI in
+your own jobs, use Option 1 (Direct Action Usage).
 
 ```yaml
 steps:
